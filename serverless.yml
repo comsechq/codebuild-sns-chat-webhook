@@ -2,7 +2,8 @@ service: codebuild-sns-chat-webhook
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs14.x
+  region: eu-west-1
 
 functions:
   sendNotification:

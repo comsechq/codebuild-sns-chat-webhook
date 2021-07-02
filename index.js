@@ -6,6 +6,25 @@ exports.handler = function(event, context) {
     console.log('From SNS:', event.Records[0].Sns.Message);
 
     var message = event.Records[0].Sns.Message;
+	var jsonMessage = JSON.parse(message);
+	
+	if(message.includes('approval')) {
+		
+      message = `*[<${jsonMessage.consoleLink}|${jsonMessage.approval.pipelineName}>]* pipeline requires approval:
+
+Stage  :  ${jsonMessage.approval.stageName}
+Action :  ${jsonMessage.approval.actionName}
+
+Please click <${jsonMessage.approval.approvalReviewLink}|here> to approve or refuse.
+`;
+    } else {
+		
+	  var pipelineUrl = `https://console.aws.amazon.com/codesuite/codepipeline/pipelines/${jsonMessage.detail.pipeline}`;
+      message = `*[<${pipelineUrl}/view?region=${jsonMessage.region}>|${jsonMessage.detail.pipeline}>]* pipeline has entered the state ${jsonMessage.detail.state}
+
+Execution ID: <${pipelineUrl}/executions/${jsonMessage.detail['execution-id']}/timeline?region=${jsonMessage.region}|${jsonMessage.detail['execution-id']}>
+`;
+	}
     
     var postData = {
         "text": message
